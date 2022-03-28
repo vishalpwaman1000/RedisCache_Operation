@@ -10,7 +10,7 @@ namespace RediesCache_Implementation.DataAccessLayer
     {
         public Task<AddInformationResponse> AddInformation(AddInformationRequest request);
 
-        public Task<GetInformationResponse> GetInformation();
+        public Task<GetInformationResponse> GetInformation(GetInformationRequest request);
 
         public Task<UpdateInformationResponse> UpdateInformation(UpdateInformationRequest request);
 

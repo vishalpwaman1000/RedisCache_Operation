@@ -1,15 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace RediesCache_Implementation.Models
 {
+    public class GetInformationRequest
+    {
+        [Required]
+        public int UserID { get; set; }
+    }
+
     public class GetInformationResponse
     {
         public bool IsSuccess { get; set; }
         public string Message { get; set; }
-        public List<GetInformation> data { get; set; }
+        public GetInformation data { get; set; }
     }
 
     public class GetInformation

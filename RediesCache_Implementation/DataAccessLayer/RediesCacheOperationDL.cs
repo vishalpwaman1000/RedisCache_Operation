@@ -111,7 +111,7 @@ namespace RediesCache_Implementation.DataAccessLayer
             return response;
         }
 
-        public async Task<GetInformationResponse> GetInformation()
+        public async Task<GetInformationResponse> GetInformation(GetInformationRequest request)
         {
             GetInformationResponse response = new GetInformationResponse();
             response.IsSuccess = true;
@@ -124,29 +124,30 @@ namespace RediesCache_Implementation.DataAccessLayer
                 }
 
                 string SqlQuery = @"SELECT *
-                                    FROM crudoperation.crudapplication";
+                                    FROM crudoperation.crudapplication
+                                    WHERE UserId=@UserId";
+
 
                 using (MySqlCommand sqlCommand = new MySqlCommand(SqlQuery, _mySqlConnection))
                 {
                     sqlCommand.CommandType = System.Data.CommandType.Text;
+                    sqlCommand.Parameters.AddWithValue("@UserId", request.UserID);
                     sqlCommand.CommandTimeout = 180;
                     using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
                     {
                         if (dataReader.HasRows)
                         {
-                            response.data = new List<GetInformation>();
+                            response.data = new GetInformation();
 
-                            while(await dataReader.ReadAsync())
+                            if(await dataReader.ReadAsync())
                             {
-                                GetInformation getData = new GetInformation();
-                                getData.UserID = dataReader["UserId"] != DBNull.Value ? Convert.ToInt32(dataReader["UserId"]) : -1;
-                                getData.UserName = dataReader["UserName"] != DBNull.Value ? dataReader["UserName"].ToString() : string.Empty;
-                                getData.EmailID = dataReader["EmailID"] != DBNull.Value ? dataReader["EmailID"].ToString() : string.Empty;
-                                getData.MobileNumber = dataReader["MobileNumber"] != DBNull.Value ? dataReader["MobileNumber"].ToString() : string.Empty;
-                                getData.Salary = dataReader["Salary"] != DBNull.Value ? Convert.ToInt32(dataReader["Salary"]) : -1;
-                                getData.Gender = dataReader["Gender"] != DBNull.Value ? dataReader["Gender"].ToString() : string.Empty;
+                                response.data.UserID = dataReader["UserId"] != DBNull.Value ? Convert.ToInt32(dataReader["UserId"]) : -1;
+                                response.data.UserName = dataReader["UserName"] != DBNull.Value ? dataReader["UserName"].ToString() : string.Empty;
+                                response.data.EmailID = dataReader["EmailID"] != DBNull.Value ? dataReader["EmailID"].ToString() : string.Empty;
+                                response.data.MobileNumber = dataReader["MobileNumber"] != DBNull.Value ? dataReader["MobileNumber"].ToString() : string.Empty;
+                                response.data.Salary = dataReader["Salary"] != DBNull.Value ? Convert.ToInt32(dataReader["Salary"]) : -1;
+                                response.data.Gender = dataReader["Gender"] != DBNull.Value ? dataReader["Gender"].ToString() : string.Empty;
                                 
-                                response.data.Add(getData);
                             }
                         }
                     }

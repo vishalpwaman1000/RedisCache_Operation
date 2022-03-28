@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RediesCache_Implementation.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class RediesCacheOperationController : ControllerBase
     {
@@ -31,7 +31,7 @@ namespace RediesCache_Implementation.Controllers
             AddInformationResponse response = new AddInformationResponse();
             try
             {
-                await _distributedCache.RemoveAsync(RedisCacheKey);
+                //await _distributedCache.RemoveAsync(RedisCacheKey);
                 response = await _rediesCacheOperationDL.AddInformation(request);
 
             }
@@ -44,8 +44,8 @@ namespace RediesCache_Implementation.Controllers
             return Ok(response);
         }
 
-        [HttpGet]
-        public async Task<IActionResult> GetInformation()
+        [HttpPost]
+        public async Task<IActionResult> GetInformation(GetInformationRequest request)
         {
             GetInformationResponse response = new GetInformationResponse() {
             IsSuccess=true,
@@ -54,16 +54,16 @@ namespace RediesCache_Implementation.Controllers
             try
             {
                 string SerializeList = string.Empty;
-                var EncodedList = await _distributedCache.GetAsync(RedisCacheKey);
+                var EncodedList = await _distributedCache.GetAsync(request.UserID.ToString());
                 if (EncodedList != null)
                 {
-                    response.data = new List<GetInformation>();
+                    response.data = new GetInformation();
                     SerializeList = Encoding.UTF8.GetString(EncodedList);
-                    response.data = JsonConvert.DeserializeObject<List<GetInformation>>(SerializeList);
+                    response.data = JsonConvert.DeserializeObject<GetInformation>(SerializeList);
                 }
                 else
                 {
-                    response = await _rediesCacheOperationDL.GetInformation();
+                    response = await _rediesCacheOperationDL.GetInformation(request);
                     if (response.IsSuccess)
                     {
                         SerializeList = JsonConvert.SerializeObject(response.data);
@@ -71,7 +71,7 @@ namespace RediesCache_Implementation.Controllers
                         var Option = new DistributedCacheEntryOptions()
                             .SetSlidingExpiration(TimeSpan.FromMinutes(20)) // After 20 min Entry will be Inactive
                             .SetAbsoluteExpiration(DateTime.Now.AddHours(6)); // Expired in 6 hour
-                        await _distributedCache.SetAsync(RedisCacheKey, EncodedList, Option);
+                        await _distributedCache.SetAsync(request.UserID.ToString(), EncodedList, Option);
                     }
                 }
 
@@ -96,7 +96,7 @@ namespace RediesCache_Implementation.Controllers
                 response = await _rediesCacheOperationDL.UpdateInformation(request);
                 if (response.IsSuccess)
                 {
-                    await _distributedCache.RemoveAsync(RedisCacheKey);
+                    await _distributedCache.RemoveAsync(request.UserID.ToString());
                 }
 
             }
@@ -119,7 +119,7 @@ namespace RediesCache_Implementation.Controllers
                 response = await _rediesCacheOperationDL.DeleteInformation(request);
                 if (response.IsSuccess)
                 {
-                    await _distributedCache.RemoveAsync(RedisCacheKey);
+                    await _distributedCache.RemoveAsync(request.UserID.ToString());
                 }
 
             }
