@@ -15,6 +15,7 @@ namespace RediesCache_Implementation.Models
     public class GetInformation
     {
         //UserName, EmailID, MobileNumber, Salary, Gender
+        public int UserID { get; set; }
         public string UserName { get; set; }
         public string EmailID { get; set; }
         public string MobileNumber { get; set; }

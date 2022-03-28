@@ -139,7 +139,7 @@ namespace RediesCache_Implementation.DataAccessLayer
                             while(await dataReader.ReadAsync())
                             {
                                 GetInformation getData = new GetInformation();
-
+                                getData.UserID = dataReader["UserId"] != DBNull.Value ? Convert.ToInt32(dataReader["UserId"]) : -1;
                                 getData.UserName = dataReader["UserName"] != DBNull.Value ? dataReader["UserName"].ToString() : string.Empty;
                                 getData.EmailID = dataReader["EmailID"] != DBNull.Value ? dataReader["EmailID"].ToString() : string.Empty;
                                 getData.MobileNumber = dataReader["MobileNumber"] != DBNull.Value ? dataReader["MobileNumber"].ToString() : string.Empty;

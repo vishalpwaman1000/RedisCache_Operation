@@ -39,6 +39,16 @@ namespace RediesCache_Implementation
             services.AddSwaggerGen();
 
             #endregion
+
+            #region Redis Cache
+
+            services.AddDistributedRedisCache(
+                options =>
+                {
+                    options.Configuration = "localhost:6379";
+                });
+
+            #endregion
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

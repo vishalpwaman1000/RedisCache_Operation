@@ -37,3 +37,6 @@ C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementatio
 C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\obj\Debug\netcoreapp3.1\RediesCache_Implementation.dll
 C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\obj\Debug\netcoreapp3.1\RediesCache_Implementation.pdb
 C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\obj\Debug\netcoreapp3.1\RediesCache_Implementation.genruntimeconfig.cache
+C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\bin\Debug\netcoreapp3.1\Microsoft.Extensions.Caching.Redis.dll
+C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\bin\Debug\netcoreapp3.1\StackExchange.Redis.StrongName.dll
+C:\Users\visha\source\repos\RediesCache_Implementation\RediesCache_Implementation\bin\Debug\netcoreapp3.1\Newtonsoft.Json.dll
