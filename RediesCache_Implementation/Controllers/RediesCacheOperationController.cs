@@ -47,19 +47,24 @@ namespace RediesCache_Implementation.Controllers
         [HttpPost]
         public async Task<IActionResult> GetInformation(GetInformationRequest request)
         {
-            GetInformationResponse response = new GetInformationResponse() {
-            IsSuccess=true,
-            Message="Successful"
+            GetInformationResponse response = new GetInformationResponse()
+            {
+                IsSuccess = true,
+                Message = "Successful"
             };
             try
             {
                 string SerializeList = string.Empty;
-                var EncodedList = await _distributedCache.GetAsync(request.UserID.ToString());
-                if (EncodedList != null)
+                //var EncodedList = await _distributedCache.GetAsync(request.UserID.ToString());
+                var Lists = await _distributedCache.GetStringAsync(request.UserID.ToString());
+                if (/*EncodedList*/ Lists != null)
                 {
                     response.data = new GetInformation();
-                    SerializeList = Encoding.UTF8.GetString(EncodedList);
-                    response.data = JsonConvert.DeserializeObject<GetInformation>(SerializeList);
+                    
+                    //SerializeList = Encoding.UTF8.GetString(EncodedList);
+                    //response.data = JsonConvert.DeserializeObject<GetInformation>(SerializeList);
+
+                    response.data = JsonConvert.DeserializeObject<GetInformation>(Lists);
                 }
                 else
                 {
@@ -67,11 +72,16 @@ namespace RediesCache_Implementation.Controllers
                     if (response.IsSuccess)
                     {
                         SerializeList = JsonConvert.SerializeObject(response.data);
-                        EncodedList = Encoding.UTF8.GetBytes(SerializeList);
+                        
+                        //EncodedList = Encoding.UTF8.GetBytes(SerializeList);
+                        
                         var Option = new DistributedCacheEntryOptions()
-                            .SetSlidingExpiration(TimeSpan.FromMinutes(20)) // After 20 min Entry will be Inactive
-                            .SetAbsoluteExpiration(DateTime.Now.AddHours(6)); // Expired in 6 hour
-                        await _distributedCache.SetAsync(request.UserID.ToString(), EncodedList, Option);
+                            .SetSlidingExpiration(TimeSpan.FromMinutes(20)) // The Cache will be expired after a particular time only if it has not been used during that time span
+                            .SetAbsoluteExpiration(DateTime.Now.AddHours(6)); // The Cache will be expired after a perticular time irrespective of the fact whether it has been used or not in that time span
+                                                                              //.AbsoluteExpirationRelativeToNow(DateTime.Now.AddHours(6)); // The Cache work similar to absolute expiration
+                        //await _distributedCache.SetAsync(request.UserID.ToString(), EncodedList, Option);
+                        
+                        await _distributedCache.SetStringAsync(request.UserID.ToString(), SerializeList, Option);
                     }
                 }
 
@@ -124,6 +134,34 @@ namespace RediesCache_Implementation.Controllers
 
             }
             catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> RefreshRecordTime()
+        {
+            RefreshRecordTimeResponse response = new RefreshRecordTimeResponse();
+            try
+            {
+
+                response = await _rediesCacheOperationDL.RefreshRecordTime();
+                if (response.IsSuccess)
+                {
+                    foreach (RefreshRecordTime data in response.data)
+                    {
+                        if (data.UserId != -1)
+                        {
+                            Console.WriteLine($"Refresh Sliding Time User ID : {data.UserId}");
+                            await _distributedCache.RefreshAsync(data.UserId.ToString());
+                        }
+                    }
+                }
+            }catch(Exception ex)
             {
                 response.IsSuccess = false;
                 response.Message = ex.Message;

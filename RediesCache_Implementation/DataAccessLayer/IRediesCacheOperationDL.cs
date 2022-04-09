@@ -15,5 +15,7 @@ namespace RediesCache_Implementation.DataAccessLayer
         public Task<UpdateInformationResponse> UpdateInformation(UpdateInformationRequest request);
 
         public Task<DeleteInformationResponse> DeleteInformation(DeleteInformationRequest request);
+
+        public Task<RefreshRecordTimeResponse> RefreshRecordTime();
     }
 }
