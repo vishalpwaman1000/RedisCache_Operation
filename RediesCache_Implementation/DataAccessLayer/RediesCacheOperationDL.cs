@@ -220,5 +220,55 @@ namespace RediesCache_Implementation.DataAccessLayer
 
             return response;
         }
+
+        public async Task<RefreshRecordTimeResponse> RefreshRecordTime()
+        {
+            RefreshRecordTimeResponse response = new RefreshRecordTimeResponse();
+            response.IsSuccess = true;
+            response.Message = "Successful";
+
+            try
+            {
+
+                if (_mySqlConnection.State != System.Data.ConnectionState.Open)
+                {
+                    await _mySqlConnection.OpenAsync();
+                }
+
+                string SqlQuery = @"SELECT UserId FROM crudoperation.crudapplication";
+
+                using (MySqlCommand sqlCommand = new MySqlCommand(SqlQuery, _mySqlConnection))
+                {
+                    sqlCommand.CommandType = System.Data.CommandType.Text;
+                    sqlCommand.CommandTimeout = 180;
+                    using (DbDataReader dataReader = await sqlCommand.ExecuteReaderAsync())
+                    {
+                        if (dataReader.HasRows)
+                        {
+                            response.IsSuccess = true;
+                            
+                        }
+                        else
+                        {
+                            response.IsSuccess = false;
+                            response.Message = "No Record Found";
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+            finally
+            {
+                await _mySqlConnection.CloseAsync();
+                await _mySqlConnection.DisposeAsync();
+            }
+
+            return response;
+        }
     }
 }

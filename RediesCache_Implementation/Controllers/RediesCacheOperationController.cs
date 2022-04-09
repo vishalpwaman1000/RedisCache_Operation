@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace RediesCache_Implementation.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[Action]")]
     [ApiController]
     public class RediesCacheOperationController : ControllerBase
     {
@@ -47,9 +47,10 @@ namespace RediesCache_Implementation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetInformation()
         {
-            GetInformationResponse response = new GetInformationResponse() {
-            IsSuccess=true,
-            Message="Successful"
+            GetInformationResponse response = new GetInformationResponse()
+            {
+                IsSuccess = true,
+                Message = "Successful"
             };
             try
             {
@@ -131,5 +132,29 @@ namespace RediesCache_Implementation.Controllers
 
             return Ok(response);
         }
+
+        [HttpGet]
+        public async Task<IActionResult> RefreshRecordTime()
+        {
+            RefreshRecordTimeResponse response = new RefreshRecordTimeResponse();
+            try
+            {
+
+                response = await _rediesCacheOperationDL.RefreshRecordTime();
+                if (response.IsSuccess)
+                {
+                    await _distributedCache.RefreshAsync(RedisCacheKey);
+                    response.Message = "Cache Refresh Successfully";
+                }
+            }
+            catch (Exception ex)
+            {
+                response.IsSuccess = false;
+                response.Message = ex.Message;
+            }
+
+            return Ok(response);
+        }
+
     }
 }
