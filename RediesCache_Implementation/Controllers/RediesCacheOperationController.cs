@@ -60,7 +60,7 @@ namespace RediesCache_Implementation.Controllers
                 if (/*EncodedList*/ Lists != null)
                 {
                     response.data = new GetInformation();
-                    
+                    await _distributedCache.RefreshAsync(request.UserID.ToString());   
                     //SerializeList = Encoding.UTF8.GetString(EncodedList);
                     //response.data = JsonConvert.DeserializeObject<GetInformation>(SerializeList);
 
