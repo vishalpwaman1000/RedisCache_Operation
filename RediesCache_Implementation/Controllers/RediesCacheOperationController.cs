@@ -58,6 +58,7 @@ namespace RediesCache_Implementation.Controllers
                 var EncodedList = await _distributedCache.GetAsync(RedisCacheKey);
                 if (EncodedList != null)
                 {
+                    await _distributedCache.RemoveAsync(RedisCacheKey);
                     response.data = new List<GetInformation>();
                     SerializeList = Encoding.UTF8.GetString(EncodedList);
                     response.data = JsonConvert.DeserializeObject<List<GetInformation>>(SerializeList);
